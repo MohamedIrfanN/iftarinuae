@@ -1,7 +1,7 @@
 import type { Express, RequestHandler, Request, Response, NextFunction } from "express";
 import { verifyIdToken, getFirebaseUser } from "./firebase-admin";
 import { db } from "./db";
-import { users } from "@shared/models/auth";
+import { users } from "../shared/models/auth";
 import { eq } from "drizzle-orm";
 
 // Extend Express Request to include user

@@ -1,10 +1,10 @@
 import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
-import { api } from "@shared/routes";
+import { api } from "../shared/routes";
 import { z } from "zod";
 import { registerAuthRoutes, isAuthenticated } from "./auth";
-import { insertPlaceSchema, insertReviewSchema } from "@shared/schema";
+import { insertPlaceSchema, insertReviewSchema } from "../shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Express> {
   // Register Auth Routes (Firebase-based)
