@@ -4,12 +4,13 @@ import { insertPlaceSchema, type CreatePlaceRequest } from "@shared/schema";
 import { useCreatePlace } from "@/hooks/use-places";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { ArrowLeft, Loader2, MapPin, Store } from "lucide-react";
+import { ArrowLeft, Loader2, Store } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import { LocationPicker } from "@/components/LocationPicker";
 
 export default function AddPlace() {
   const [, setLocation] = useLocation();
@@ -21,6 +22,8 @@ export default function AddPlace() {
       name: "",
       location: "",
       description: "",
+      latitude: "",
+      longitude: "",
     },
   });
 
@@ -77,10 +80,16 @@ export default function AddPlace() {
                 <FormItem>
                   <FormLabel className="text-base">Location</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
-                      <Input placeholder="e.g. Downtown Dubai, near Burj Khalifa" className="pl-10 h-12 rounded-xl" {...field} />
-                    </div>
+                    <LocationPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      onLocationFetched={(data) => {
+                        form.setValue("location", data.address);
+                        form.setValue("latitude", data.latitude);
+                        form.setValue("longitude", data.longitude);
+                      }}
+                      placeholder="e.g. Downtown Dubai, near Burj Khalifa"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

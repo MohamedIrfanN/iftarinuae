@@ -57,11 +57,22 @@ export default function PlaceDetails() {
           <div className="flex-1">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-4 text-balance">{place.name}</h1>
             
-            <div className="flex items-center gap-4 text-muted-foreground mb-6">
-              <div className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4" />
-                <span>{place.location}</span>
-              </div>
+            <div className="flex items-center gap-4 text-muted-foreground mb-6 flex-wrap">
+              {place.latitude && place.longitude ? (
+                <button
+                  type="button"
+                  onClick={() => window.open(`https://www.google.com/maps?q=${place.latitude},${place.longitude}`, "_blank")}
+                  className="flex items-center gap-1.5 hover:text-primary transition-colors cursor-pointer group"
+                >
+                  <MapPin className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span className="underline underline-offset-2 decoration-dashed">{place.location}</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4" />
+                  <span>{place.location}</span>
+                </div>
+              )}
               <div className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
               <div className="flex items-center gap-1.5 text-foreground font-medium">
                 <Star className="w-4 h-4 fill-[hsl(var(--star))] text-[hsl(var(--star))]" />
