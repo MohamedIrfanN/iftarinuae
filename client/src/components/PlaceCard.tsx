@@ -39,7 +39,21 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
             
             <div className="flex items-start gap-1.5 text-muted-foreground mb-4">
               <MapPin className="w-4 h-4 mt-0.5 shrink-0" />
-              <p className="text-sm line-clamp-2">{place.location}</p>
+              {place.latitude && place.longitude ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(`https://www.google.com/maps?q=${place.latitude},${place.longitude}`, "_blank");
+                  }}
+                  className="text-sm line-clamp-2 text-left hover:text-primary underline underline-offset-2 decoration-dashed transition-colors"
+                >
+                  {place.location}
+                </button>
+              ) : (
+                <p className="text-sm line-clamp-2">{place.location}</p>
+              )}
             </div>
             
             {place.description && (

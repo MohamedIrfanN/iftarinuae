@@ -13,6 +13,8 @@ export const places = pgTable("places", {
   name: text("name").notNull(),
   description: text("description"),
   location: text("location").notNull(),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
   createdBy: varchar("created_by").notNull(), // Links to user ID
   createdAt: timestamp("created_at").defaultNow(),
 });
