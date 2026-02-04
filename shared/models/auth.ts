@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 
 // Session storage table (kept for potential future use, e.g., server-side session if needed)
 export const sessions = pgTable(
@@ -20,6 +20,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  isAdmin: boolean("is_admin").default(false).notNull(), // Admin access control
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
