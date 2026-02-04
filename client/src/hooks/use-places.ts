@@ -67,8 +67,8 @@ export function useCreatePlace() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.places.list.path] });
       toast({
-        title: "Place Added",
-        description: "Thank you for sharing this Iftar spot!",
+        title: "Place Submitted",
+        description: "Your Iftar spot has been submitted for approval. It will appear once reviewed.",
       });
     },
     onError: (error) => {

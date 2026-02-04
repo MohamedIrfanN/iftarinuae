@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import PlaceDetails from "@/pages/PlaceDetails";
 import AddPlace from "@/pages/AddPlace";
 import LoginPage from "@/pages/LoginPage";
+import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
@@ -44,6 +45,9 @@ function Router() {
           <Route path="/places/:id" component={PlaceDetails} />
           <Route path="/add">
             <ProtectedRoute component={AddPlace} />
+          </Route>
+          <Route path="/admin">
+            <ProtectedRoute component={Admin} />
           </Route>
           <Route component={NotFound} />
         </Switch>

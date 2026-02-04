@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { api } from "../shared/routes";
 import { z } from "zod";
 import { registerAuthRoutes, isAuthenticated } from "./auth";
+import { isAdmin } from "./middleware/admin";
 import { insertPlaceSchema, insertReviewSchema } from "../shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Express> {
@@ -77,6 +78,54 @@ export async function registerRoutes(app: Express): Promise<Express> {
       throw err;
     }
   });
+
+  // === ADMIN ROUTES ===
+
+  // List all places (for admin)
+  app.get("/api/admin/places", isAuthenticated, isAdmin, async (req, res) => {
+    const places = await storage.getPlacesForAdmin();
+    res.json(places);
+  });
+
+  // List pending places
+  app.get("/api/admin/places/pending", isAuthenticated, isAdmin, async (req, res) => {
+    const pendingPlaces = await storage.getPendingPlaces();
+    res.json(pendingPlaces);
+  });
+
+  // Approve a place
+  app.patch("/api/admin/places/:id/approve", isAuthenticated, isAdmin, async (req, res) => {
+    const placeId = req.params.id as string;
+    const adminUserId = req.user!.id;
+
+    const approvedPlace = await storage.approvePlace(placeId, adminUserId);
+
+    if (!approvedPlace) {
+      return res.status(404).json({ message: "Place not found" });
+    }
+
+    res.json(approvedPlace);
+  });
+
+  // Reject a place (deletes it)
+  app.delete("/api/admin/places/:id/reject", isAuthenticated, isAdmin, async (req, res) => {
+    const placeId = req.params.id as string;
+
+    const deleted = await storage.rejectPlace(placeId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Place not found" });
+    }
+
+    res.json({ message: "Place rejected and deleted" });
+  });
+
+  // Get admin statistics
+  app.get("/api/admin/stats", isAuthenticated, isAdmin, async (req, res) => {
+    const stats = await storage.getAdminStats();
+    res.json(stats);
+  });
+
 
   // Seed Data (if empty)
   console.log(`[${new Date().toISOString()}] Checking if database needs seeding...`);

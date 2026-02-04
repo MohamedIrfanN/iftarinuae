@@ -17,6 +17,10 @@ export const places = pgTable("places", {
   longitude: text("longitude"),
   createdBy: varchar("created_by").notNull(), // Links to user ID
   createdAt: timestamp("created_at").defaultNow(),
+  // Approval workflow fields
+  approved: boolean("approved").default(false).notNull(),
+  approvedBy: varchar("approved_by"), // Links to admin user ID (nullable)
+  approvedAt: timestamp("approved_at"), // Nullable
 });
 
 export const reviews = pgTable("reviews", {
@@ -46,7 +50,10 @@ export const reviewsRelations = relations(reviews, ({ one }) => ({
 export const insertPlaceSchema = createInsertSchema(places).omit({
   id: true,
   createdBy: true,
-  createdAt: true
+  createdAt: true,
+  approved: true,
+  approvedBy: true,
+  approvedAt: true,
 });
 
 export const insertReviewSchema = createInsertSchema(reviews).omit({
