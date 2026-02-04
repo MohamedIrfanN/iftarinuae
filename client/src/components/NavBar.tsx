@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { MoonStar, LogOut, User as UserIcon } from "lucide-react";
+import { MoonStar, LogOut, User as UserIcon, ShieldAlert } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +49,17 @@ export function NavBar() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
+                {user?.isAdmin && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="cursor-pointer w-full flex items-center rounded-lg">
+                        <ShieldAlert className="mr-2 h-4 w-4" />
+                        <span>Admin Panel</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={() => logout()} className="text-red-500 focus:text-red-500 focus:bg-red-50 rounded-lg cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
