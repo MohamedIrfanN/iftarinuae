@@ -2,14 +2,28 @@ import express from "express";
 import { registerRoutes } from "./routes";
 import helmet from "helmet";
 
+import { rateLimit } from "express-rate-limit";
+
 export async function createApp() {
     const app = express();
 
     // Security Headers
     app.use(helmet({
         contentSecurityPolicy: false, // Disable CSP for simplicity in this demo, enable for prod
-        crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }, // Allow Firebase Auth popups
+        crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Allow Firebase Auth popups (google.com origin)
     }));
+
+    // Rate Limiting
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        limit: 1000, // Relaxed limit: 1000 requests per 15 minutes
+        standardHeaders: true,
+        legacyHeaders: false,
+        message: { message: "Too many requests, please try again later." }
+    });
+
+    // Apply rate limiting to all requests
+    app.use(limiter);
 
     // JSON Body Parser with rawBody capture (if needed for webhooks, else standard is fine)
     app.use(express.json());
