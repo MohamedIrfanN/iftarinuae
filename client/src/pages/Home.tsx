@@ -7,6 +7,7 @@ import { Search, Plus, Loader2, UtensilsCrossed, Navigation } from "lucide-react
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 import { useToast } from "@/hooks/use-toast";
 import { PlaceWithDistance } from "@shared/schema";
 
@@ -85,6 +86,10 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24">
+      <SEO 
+        title="IftarInUAE - Find the Best Iftar Places"
+        description="Discover top-rated Iftar buffets, set menus, and traditional tents across UAE for Ramadan 2026. Find iftar places near you."
+      />
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
