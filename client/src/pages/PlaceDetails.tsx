@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SEO } from "@/components/SEO";
 
 export default function PlaceDetails() {
   const { id } = useParams();
@@ -41,6 +42,27 @@ export default function PlaceDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 max-w-4xl">
+      <SEO 
+        title={place.name}
+        description={place.description || `Check out ${place.name} in ${place.location} for Iftar.`}
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "FoodEstablishment",
+          "name": place.name,
+          "description": place.description,
+          "address": place.location,
+          "geo": place.latitude && place.longitude ? {
+            "@type": "GeoCoordinates",
+            "latitude": place.latitude,
+            "longitude": place.longitude
+          } : undefined,
+          "aggregateRating": place.reviews.length > 0 ? {
+            "@type": "AggregateRating",
+            "ratingValue": avgRating,
+            "reviewCount": place.reviews.length
+          } : undefined
+        }}
+      />
       <Link href="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4 mr-1" />
         Back to places

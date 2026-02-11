@@ -173,6 +173,45 @@ export async function registerRoutes(app: Express): Promise<Express> {
   });
 
 
+  // === SEO ROUTES ===
+
+  app.get("/robots.txt", (req, res) => {
+    res.type("text/plain");
+    res.send(`User-agent: *\nAllow: /\nSitemap: https://${req.get("host")}/sitemap.xml`);
+  });
+
+  app.get("/sitemap.xml", async (req, res) => {
+    const places = await storage.getPlaces();
+    const baseUrl = `https://${req.get("host")}`;
+
+    const staticPages = [
+      `${baseUrl}/`,
+      `${baseUrl}/login`,
+      `${baseUrl}/add`,
+    ];
+
+    const placePages = places.map(place => `${baseUrl}/places/${place.id}`);
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${staticPages.map(url => `
+  <url>
+    <loc>${url}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('')}
+  ${placePages.map(url => `
+  <url>
+    <loc>${url}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join('')}
+</urlset>`;
+
+    res.type("application/xml");
+    res.send(sitemap);
+  });
+
   // Seed Data (if empty)
   console.log(`[${new Date().toISOString()}] Checking if database needs seeding...`);
 
