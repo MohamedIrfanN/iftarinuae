@@ -51,7 +51,6 @@ export async function registerRoutes(app: Express, strictLimiter?: RequestHandle
       const distance = R * c; // Distance in km
 
       return { ...place, distance };
-      return { ...place, distance };
     }).sort((a, b) => a.distance - b.distance).slice(0, 20); // Limit to top 20 closest places
 
     // Filter out places with Infinity distance (invalid coordinates) if desired, 

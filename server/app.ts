@@ -7,18 +7,33 @@ import { rateLimit } from "express-rate-limit";
 export async function createApp() {
     const app = express();
 
+    // Trust Vercel's proxy so express-rate-limit can read the real client IP
+    // from the X-Forwarded-For header (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+    app.set("trust proxy", 1);
+
     // Security Headers
-    // Security Headers
+    const isDev = process.env.NODE_ENV !== "production";
     app.use(helmet({
-        contentSecurityPolicy: {
+        // Disable CSP in development — Vite manages its own security and its
+        // HMR WebSocket (ws://localhost:*) would otherwise be blocked.
+        contentSecurityPolicy: isDev ? false : {
             directives: {
                 defaultSrc: ["'self'"],
                 scriptSrc: ["'self'", "'unsafe-inline'", "https://apis.google.com", "https://www.googletagmanager.com"],
-                connectSrc: ["'self'", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://*.firebaseio.com", "wss://*.firebaseio.com"],
+                connectSrc: [
+                    "'self'",
+                    "https://identitytoolkit.googleapis.com",
+                    "https://securetoken.googleapis.com",
+                    "https://*.firebaseio.com",
+                    "wss://*.firebaseio.com",
+                    // Map feature: Photon search + Nominatim reverse geocoding
+                    "https://photon.komoot.io",
+                    "https://nominatim.openstreetmap.org",
+                ],
                 imgSrc: ["'self'", "data:", "https:", "blob:"],
                 styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
                 fontSrc: ["'self'", "https://fonts.gstatic.com"],
-                frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.googleapis.com"], // For Firebase Auth iframe
+                frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.googleapis.com"],
             },
         },
         crossOriginOpenerPolicy: { policy: "unsafe-none" }, // Allow Firebase Auth popups (google.com origin)
@@ -56,17 +71,20 @@ export async function createApp() {
         const path = req.path;
         let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-        const originalResJson = res.json;
-        res.json = function (bodyJson, ...args) {
-            capturedJsonResponse = bodyJson;
-            return originalResJson.apply(res, [bodyJson, ...args]);
-        };
+        // Only capture response body in development (avoids logging PII in production)
+        if (isDev) {
+            const originalResJson = res.json;
+            res.json = function (bodyJson, ...args) {
+                capturedJsonResponse = bodyJson;
+                return originalResJson.apply(res, [bodyJson, ...args]);
+            };
+        }
 
         res.on("finish", () => {
             const duration = Date.now() - start;
             if (path.startsWith("/api")) {
                 let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-                if (capturedJsonResponse) {
+                if (isDev && capturedJsonResponse) {
                     logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
                 }
                 console.log(logLine);
