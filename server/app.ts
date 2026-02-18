@@ -20,7 +20,16 @@ export async function createApp() {
             directives: {
                 defaultSrc: ["'self'"],
                 scriptSrc: ["'self'", "'unsafe-inline'", "https://apis.google.com", "https://www.googletagmanager.com"],
-                connectSrc: ["'self'", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://*.firebaseio.com", "wss://*.firebaseio.com"],
+                connectSrc: [
+                    "'self'",
+                    "https://identitytoolkit.googleapis.com",
+                    "https://securetoken.googleapis.com",
+                    "https://*.firebaseio.com",
+                    "wss://*.firebaseio.com",
+                    // Map feature: Photon search + Nominatim reverse geocoding
+                    "https://photon.komoot.io",
+                    "https://nominatim.openstreetmap.org",
+                ],
                 imgSrc: ["'self'", "data:", "https:", "blob:"],
                 styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
                 fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -62,17 +71,20 @@ export async function createApp() {
         const path = req.path;
         let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
-        const originalResJson = res.json;
-        res.json = function (bodyJson, ...args) {
-            capturedJsonResponse = bodyJson;
-            return originalResJson.apply(res, [bodyJson, ...args]);
-        };
+        // Only capture response body in development (avoids logging PII in production)
+        if (isDev) {
+            const originalResJson = res.json;
+            res.json = function (bodyJson, ...args) {
+                capturedJsonResponse = bodyJson;
+                return originalResJson.apply(res, [bodyJson, ...args]);
+            };
+        }
 
         res.on("finish", () => {
             const duration = Date.now() - start;
             if (path.startsWith("/api")) {
                 let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-                if (capturedJsonResponse) {
+                if (isDev && capturedJsonResponse) {
                     logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
                 }
                 console.log(logLine);
