@@ -120,7 +120,7 @@ export default function Home() {
             className={`h-12 rounded-full shrink-0 shadow-sm px-5 gap-2 font-medium border transition-all ${
               nearbyPlaces
                 ? "bg-uae-red/10 text-uae-red border-uae-red/30 hover:bg-uae-red/20"
-                : "bg-background text-uae-red border-border/60 hover:bg-secondary hover:border-uae-red/40"
+                : "bg-background text-foreground border-border/60 hover:bg-secondary"
             }`}
             variant="ghost"
             onClick={nearbyPlaces ? clearNearby : handleFindNearest}
