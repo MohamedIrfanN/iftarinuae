@@ -187,7 +187,7 @@ export function LocationPicker({
   onLocationFetched,
   placeholder = "e.g. Downtown Dubai, near Burj Khalifa",
 }: LocationPickerProps) {
-  const [activeTab, setActiveTab] = useState<Tab>("search");
+  const [activeTab, setActiveTab] = useState<Tab>("link");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -441,23 +441,23 @@ export function LocationPicker({
   };
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: "search", label: "Search", icon: <Search className="w-3.5 h-3.5" /> },
-    { id: "map", label: "Map Pin", icon: <Map className="w-3.5 h-3.5" /> },
-    { id: "gps", label: "My Location", icon: <Navigation className="w-3.5 h-3.5" /> },
     { id: "link", label: "Map Link", icon: <LinkIcon className="w-3.5 h-3.5" /> },
+    { id: "gps", label: "My Location", icon: <Navigation className="w-3.5 h-3.5" /> },
+    { id: "search", label: "Name", icon: <Search className="w-3.5 h-3.5" /> },
+    { id: "map", label: "Map Pin", icon: <Map className="w-3.5 h-3.5" /> },
   ];
 
   return (
     <div className="space-y-3">
       {/* Tab bar */}
-      <div className="flex gap-1 p-1 bg-secondary/40 rounded-xl">
+      <div className="flex gap-1 p-1 bg-secondary/40 rounded-xl overflow-x-auto scrollbar-hide snap-x">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => { setActiveTab(tab.id); setError(null); }}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all",
+              "flex-none sm:flex-1 shrink-0 snap-start flex items-center justify-center gap-1.5 py-2 px-3 sm:px-4 rounded-lg text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap",
               activeTab === tab.id
                 ? "bg-background shadow-sm text-foreground"
                 : "text-muted-foreground hover:text-foreground"
