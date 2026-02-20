@@ -17,6 +17,10 @@ export const places = pgTable("places", {
   longitude: text("longitude"),
   createdBy: varchar("created_by").notNull(), // Links to user ID
   createdAt: timestamp("created_at").defaultNow(),
+  // Images (up to 3 Cloudinary URLs per place)
+  imageUrl1: text("image_url_1"),
+  imageUrl2: text("image_url_2"),
+  imageUrl3: text("image_url_3"),
   // Approval workflow fields
   approved: boolean("approved").default(false).notNull(),
   approvedBy: varchar("approved_by"), // Links to admin user ID (nullable)
@@ -54,6 +58,11 @@ export const insertPlaceSchema = createInsertSchema(places).omit({
   approved: true,
   approvedBy: true,
   approvedAt: true,
+}).extend({
+  // All three image fields are optional Cloudinary URLs
+  imageUrl1: z.string().url().nullable().optional(),
+  imageUrl2: z.string().url().nullable().optional(),
+  imageUrl3: z.string().url().nullable().optional(),
 });
 
 export const insertReviewSchema = createInsertSchema(reviews).omit({

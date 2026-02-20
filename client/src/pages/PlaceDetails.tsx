@@ -23,13 +23,13 @@ export default function PlaceDetails() {
   const { id } = useParams();
   const { data: place, isLoading, error } = usePlace(id!);
   const { isAuthenticated } = useAuth();
-  
+
   if (isLoading) return (
     <div className="h-[80vh] flex items-center justify-center">
       <Loader2 className="w-10 h-10 animate-spin text-muted-foreground" />
     </div>
   );
-  
+
   if (error || !place) return (
     <div className="container mx-auto px-4 py-20 text-center">
       <h2 className="text-2xl font-bold mb-4">Place not found</h2>
@@ -43,7 +43,7 @@ export default function PlaceDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 max-w-4xl">
-      <SEO 
+      <SEO
         title={place.name}
         description={place.description || `Check out ${place.name} in ${place.location} for Iftar.`}
         schema={{
@@ -69,17 +69,17 @@ export default function PlaceDetails() {
         Back to places
       </Link>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-card rounded-3xl border border-border/60 shadow-sm p-6 md:p-10 mb-10 relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-300 via-amber-400 to-yellow-300 opacity-50" />
-        
+
         <div className="flex flex-col md:flex-row justify-between items-start gap-6">
           <div className="flex-1">
             <h1 className="text-3xl md:text-4xl font-display font-bold mb-4 text-balance">{place.name}</h1>
-            
+
             <div className="flex items-center gap-4 text-muted-foreground mb-6 flex-wrap">
               {place.latitude && place.longitude ? (
                 <button
@@ -108,9 +108,9 @@ export default function PlaceDetails() {
               {place.description || "No description provided."}
             </p>
           </div>
-          
+
           <div className="flex gap-3">
-            <ShareButton 
+            <ShareButton
               title={place.name}
               text={place.description || `Check out ${place.name} in ${place.location} for Iftar.`}
               url={typeof window !== 'undefined' ? window.location.href : ''}
@@ -123,9 +123,39 @@ export default function PlaceDetails() {
         </div>
       </motion.div>
 
+      {/* ── Photo Gallery (only shown when images exist) ── */}
+      {(place.imageUrl1 || place.imageUrl2 || place.imageUrl3) && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-2 mb-10"
+        >
+          {[place.imageUrl1, place.imageUrl2, place.imageUrl3]
+            .filter(Boolean)
+            .map((url, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-2xl overflow-hidden bg-muted"
+                style={{
+                  flexBasis: `${100 / [place.imageUrl1, place.imageUrl2, place.imageUrl3].filter(Boolean).length}%`,
+                  aspectRatio: '4/3',
+                }}
+              >
+                <img
+                  src={url!}
+                  alt={`${place.name} photo ${i + 1}`}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+        </motion.div>
+      )}
+
       <div className="space-y-8">
         <h2 className="text-2xl font-display font-bold">Reviews</h2>
-        
+
         {place.reviews.length === 0 ? (
           <div className="text-center py-12 bg-secondary/20 rounded-2xl border border-dashed border-border/60">
             <p className="text-muted-foreground mb-4">No reviews yet. Be the first to share your experience!</p>
@@ -134,7 +164,7 @@ export default function PlaceDetails() {
         ) : (
           <div className="grid gap-6">
             {place.reviews.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()).map((review) => (
-              <motion.div 
+              <motion.div
                 key={review.id}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -158,7 +188,7 @@ export default function PlaceDetails() {
                   </div>
                   <StarRating value={review.rating} readOnly size="sm" />
                 </div>
-                
+
                 {review.comment && (
                   <p className="text-muted-foreground leading-relaxed pl-13">
                     {review.comment}
@@ -182,7 +212,7 @@ function ReviewDialog({ placeId, isAuthenticated, label = "Write a Review" }: { 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0) return;
-    
+
     await createReview.mutateAsync({
       rating,
       comment,
@@ -223,19 +253,19 @@ function ReviewDialog({ placeId, isAuthenticated, label = "Write a Review" }: { 
               {rating === 5 && "Excellent"}
             </span>
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium ml-1">Comments (optional)</label>
-            <Textarea 
-              placeholder="What did you like about the food or atmosphere?" 
+            <Textarea
+              placeholder="What did you like about the food or atmosphere?"
               className="resize-none min-h-[120px] rounded-xl bg-secondary/20 border-border focus:bg-background transition-colors"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
           </div>
-          
-          <Button 
-            type="submit" 
+
+          <Button
+            type="submit"
             className="w-full h-12 rounded-xl text-base font-semibold"
             disabled={rating === 0 || createReview.isPending}
           >
