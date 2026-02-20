@@ -191,6 +191,16 @@ export async function registerRoutes(app: Express, strictLimiter?: RequestHandle
       return res.status(400).json({ message: "imageUrl is required" });
     }
 
+    // Only accept images hosted on Cloudinary
+    try {
+      const { hostname } = new URL(imageUrl);
+      if (hostname !== "res.cloudinary.com") {
+        return res.status(400).json({ message: "Images must be uploaded via the app's upload tool." });
+      }
+    } catch {
+      return res.status(400).json({ message: "Invalid image URL." });
+    }
+
     // Verify the place exists
     const place = await storage.getPlace(placeId);
     if (!place) {
