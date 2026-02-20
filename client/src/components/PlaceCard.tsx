@@ -15,7 +15,7 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
     : 0);
 
   const reviewCount = place.reviewCount || place.reviews.length;
-  const imageList = [place.imageUrl1, place.imageUrl2, place.imageUrl3].filter(Boolean) as string[];
+  const hasPhotos = !!(place.imageUrl1 || place.imageUrl2 || place.imageUrl3);
 
   return (
     <motion.div
@@ -25,26 +25,6 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
     >
       <Link href={`/places/${place.id}`} className="block h-full group">
         <article className="h-full bg-card rounded-2xl border border-border/50 shadow-sm hover:shadow-lg hover:shadow-black/5 hover:-translate-y-1 hover:border-l-[3px] hover:border-l-uae-green transition-all duration-300 flex flex-col overflow-hidden">
-
-          {/* ── Image strip: shown only when at least one image exists ── */}
-          {imageList.length > 0 && (
-            <div className="flex gap-0.5 h-36 shrink-0">
-              {imageList.map((url, i) => (
-                <div
-                  key={i}
-                  className="overflow-hidden"
-                  style={{ flexBasis: `${100 / imageList.length}%` }}
-                >
-                  <img
-                    src={url}
-                    alt={`${place.name} photo ${i + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* ── Card body ── */}
           <div className="p-5 flex flex-col justify-between flex-1">
@@ -107,7 +87,7 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
                   className="hover:bg-secondary text-muted-foreground w-8 h-8 transition-opacity"
                 />
                 <span className="font-medium text-uae-green group-hover:translate-x-1 transition-transform">
-                  View details →
+                  {hasPhotos ? "View details & photos →" : "View details →"}
                 </span>
               </div>
             </div>

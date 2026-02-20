@@ -8,6 +8,8 @@ interface CloudinaryUploadProps {
     /** Called when images change — always emits an array of exactly 3 elements */
     onChange: (urls: [string | null, string | null, string | null]) => void;
     className?: string;
+    /** Limit visible upload slots (default: 3) */
+    maxSlots?: number;
 }
 
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
@@ -37,6 +39,7 @@ export function CloudinaryUpload({
     imageUrls,
     onChange,
     className,
+    maxSlots = MAX_IMAGES,
 }: CloudinaryUploadProps) {
     const [uploading, setUploading] = useState<number | null>(null); // slot index uploading
 
@@ -92,11 +95,11 @@ export function CloudinaryUpload({
     return (
         <div className={cn("space-y-3", className)}>
             <p className="text-sm text-muted-foreground">
-                Up to {MAX_IMAGES} photos. Each photo must be under 10 MB.
+                Up to {maxSlots} photo{maxSlots > 1 ? "s" : ""}. Each photo must be under 10 MB.
             </p>
 
-            <div className="grid grid-cols-3 gap-3">
-                {slots.map((url, i) => (
+            <div className={cn("grid gap-3", maxSlots === 1 ? "grid-cols-1" : maxSlots === 2 ? "grid-cols-2" : "grid-cols-3")}>
+                {slots.slice(0, maxSlots).map((url, i) => (
                     <div key={i} className="relative aspect-square">
                         {url ? (
                             /* ── Filled slot ── */
