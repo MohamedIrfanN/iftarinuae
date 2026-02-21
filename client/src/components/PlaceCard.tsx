@@ -10,12 +10,12 @@ interface PlaceCardProps {
 }
 
 export function PlaceCard({ place, index }: PlaceCardProps) {
-  // Calculate stats if backend doesn't provide them
   const avgRating = place.averageRating || (place.reviews.length > 0
     ? place.reviews.reduce((sum, r) => sum + r.rating, 0) / place.reviews.length
     : 0);
-  
+
   const reviewCount = place.reviewCount || place.reviews.length;
+  const hasPhotos = !!(place.imageUrl1 || place.imageUrl2 || place.imageUrl3);
 
   return (
     <motion.div
@@ -85,7 +85,7 @@ export function PlaceCard({ place, index }: PlaceCardProps) {
                 className="hover:bg-secondary text-muted-foreground w-8 h-8 transition-opacity"
               />
               <span className="font-medium text-uae-green group-hover:translate-x-1 transition-transform">
-                View details →
+                {hasPhotos ? "View details & photos →" : "View details →"}
               </span>
             </div>
           </div>
